@@ -1,0 +1,26 @@
+.storeButton {
+  display: inline-block;
+  margin: 1rem auto;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+  background-color: #f8bcbc;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.storeButton:hover {
+  background-color: #f2a0a0;
+}
+
+.storeButton:active {
+  background-color: #e68a8a;
+}
+
+.storeButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

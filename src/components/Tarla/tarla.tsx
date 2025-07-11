@@ -1,9 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useContext } from "react";
-import Tohum, { HucreStage } from "../tohum/tohum";
 import styles from "./tarla.module.css";
-import { MoneyContext } from "../../contexts/MoneyContext";
+import { MoneyContext } from "@/contexts/MoneyContext";
+import { StoreContext } from "@/contexts/StoreContext";
+import { tohumlar } from "@/app/store/page";
+
+type HucreStage = "boş" | "tohum" | "fidan" | "bitki" | "çiçek" | "kurumuş çiçek";
 
 const TARLA_SIZE = 4;
 const stageOrder: HucreStage[] = [
@@ -16,13 +19,18 @@ const stageOrder: HucreStage[] = [
 ];
 
 export default function Tarla() {
+  const { money, setMoney }     = useContext(MoneyContext);
+  const { stocks, setStocks }   = useContext(StoreContext);
 
-  const { money, setMoney } = useContext(MoneyContext);
-
-  const [stages, setStages] = useState<HucreStage[]>(
+  const [selectedSeed, setSelectedSeed] = useState<number>(0);
+  const [stages, setStages]             = useState<HucreStage[]>(
     Array(TARLA_SIZE * TARLA_SIZE).fill("boş")
   );
-  const [tick, setTick] = useState(0);
+  const [species, setSpecies]           = useState<number[]>(
+    Array(TARLA_SIZE * TARLA_SIZE).fill(-1)
+  );
+
+  const [tick, setTick]       = useState(0);
   const [gameOver, setGameOver] = useState(false);
 
   useEffect(() => {
@@ -32,12 +40,6 @@ export default function Tarla() {
 
   useEffect(() => {
     setStages(prev =>
-        // state updates can be asenchronous,
-        // so we need to use the previous state
-        //setINterval içinceki closure kapanış yolu eski bir değer tutabilir
-        // with functional form we can access the previous and live state
-        // yeni state önceki state in bir fonksiyonu
-        // React setState API
       prev.map(s => {
         const i = stageOrder.indexOf(s);
         if (s === "boş" || s === "kurumuş çiçek") return s;
@@ -53,39 +55,64 @@ export default function Tarla() {
   }, [tick]);
 
   useEffect(() => {
-    if (
-      !gameOver &&
-      money < 10 &&
-      stages.every(s => s === "boş" || s === "kurumuş çiçek")
-    ) {
+    const noStoreSeeds = stocks.every(n => n === 0);
+    const allWithered  = stages.every(s => s === "boş" || s === "kurumuş çiçek");
+    if (!gameOver && money < 10 && noStoreSeeds && allWithered) {
       setGameOver(true);
       alert("Oyun bitti! Son bakiye: " + money);
     }
-  }, [money, stages, gameOver]);
+  }, [money, stocks, stages, gameOver]);
 
-  const handleClick = (idx: number) => {
+  const handleCellClick = (idx: number) => {
     if (gameOver) return;
     const current = stages[idx];
 
-    if (current === "boş" && money >= 5) {
-      setMoney(m => m - 5);
-      setStages(prev => {
-        const copy = [...prev];
-        copy[idx] = "tohum";
-        return copy;
+    if (current === "boş" && stocks[selectedSeed] > 0) {
+      setStocks(s => {
+        const next = [...s];
+        next[selectedSeed]--;
+        return next;
       });
-    } else if (current === "çiçek") {
-      setMoney(m => m + 10);
-      setStages(prev => {
-        const copy = [...prev];
-        copy[idx] = "boş";
-        return copy;
+      setStages(s => {
+        const next = [...s];
+        next[idx] = "tohum";
+        return next;
       });
-    } else if (current === "kurumuş çiçek") {
-      setStages(prev => {
-        const copy = [...prev];
-        copy[idx] = "boş";
-        return copy;
+      setSpecies(s => {
+        const next = [...s];
+        next[idx] = selectedSeed;
+        return next;
+      });
+      return;
+    }
+
+    if (current === "çiçek") {
+      const prodIdx = species[idx];
+      const gain    = tohumlar[prodIdx].harvestPrice;
+      setMoney(m => m + gain);
+      setStages(s => {
+        const next = [...s];
+        next[idx] = "boş";
+        return next;
+      });
+      setSpecies(s => {
+        const next = [...s];
+        next[idx] = -1;
+        return next;
+      });
+      return;
+    }
+
+    if (current === "kurumuş çiçek") {
+      setStages(s => {
+        const next = [...s];
+        next[idx] = "boş";
+        return next;
+      });
+      setSpecies(s => {
+        const next = [...s];
+        next[idx] = -1;
+        return next;
       });
     }
   };
@@ -93,17 +120,51 @@ export default function Tarla() {
   if (gameOver) {
     return (
       <div className={styles.gameOver}>
-        <h2>Oyun Bitti bişi yapamadın!</h2>
+        <h2>Oyun Bitti! Tekrar deneyin.</h2>
       </div>
     );
   }
 
+  const stageClass = (stage: HucreStage, idx: number) => {
+    switch (stage) {
+      case "boş":            return styles.empty;
+      case "tohum":          return styles.seeding;
+      case "fidan":          return styles.fidan;
+      case "bitki":          return styles.bitki;
+      case "çiçek":         
+        return species[idx] === 0 
+          ? styles.flowerDaisy 
+          : styles.flowerTulip;
+      case "kurumuş çiçek":  return styles.withered;
+      default:               return "";
+    }
+  };
+
   return (
     <>
+      <div className={styles.toolbar}>
+        {tohumlar.map((p, idx) => (
+          <button
+            key={p.id}
+            className={`${styles.seedButton} ${
+              selectedSeed === idx ? styles.selected : ""
+            }`}
+            onClick={() => setSelectedSeed(idx)}
+          >
+            {p.name} ({stocks[idx]})
+          </button>
+        ))}
+      </div>
+
       <div className={styles.balance}>Bakiye: {money}</div>
+
       <div className={styles.menuGrid}>
         {stages.map((stage, idx) => (
-          <Tohum key={idx} stage={stage} onClick={() => handleClick(idx)} />
+          <button
+            key={idx}
+            className={`${styles.cellButton} ${stageClass(stage, idx)}`}
+            onClick={() => handleCellClick(idx)}
+          />
         ))}
       </div>
     </>

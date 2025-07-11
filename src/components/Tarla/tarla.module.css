@@ -1,16 +1,35 @@
-.menuGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 80px);
-  gap: 8px;
-  justify-content: center;
-  margin: 1rem auto;
+.cellButton {
+  width: 100px; height: 100px;
+  background-size: cover;
+  border: none; border-radius: 8px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
 }
-.tarlaHuce {
-  width: 80px;
-  height: 80px;
-  background-color: #eee;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
+.empty { background-color: #8b4513; }
+.seeding { background-image: url("/Seeding.png"); }
+.fidan { background-image: url("/LittlePlant.png"); }
+.bitki { background-image: url("/MiddlePlant.png"); }
+.flowerDaisy { background-image: url("/Papatya.png"); }
+.flowerTulip { background-image: url("/Tulip.png"); }
+.withered { background-image: url("/DriedDaisy.png"); }
+
+.toolbar {
+  display: flex; gap: 1rem; justify-content: center; margin-bottom: 1rem;
+}
+.seedButton {
+  padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;
+}
+.selected {
+  background-color: #cceeff;
+}
+.menuGrid {
+  display: grid; grid-template-columns: repeat(4, 100px);
+  gap: 8px; justify-content: center; margin-top: 1rem;
+}
+.balance {
+  text-align: center; font-size: 1.25rem; margin-top: 1rem;
+}
+.gameOver {
+  text-align: center; margin-top: 2rem;
 }

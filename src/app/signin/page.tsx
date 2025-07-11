@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import styles from "./page.module.css";
 export default function SignIn() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -40,35 +40,46 @@ export default function SignIn() {
     router.push("/signup");
   };
 
-  return (
-    <div>
-      <h1>GİRİŞ YAP</h1>
-      <div>
-        <label>Kullanıcı Adı:</label>
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Şifre:</label>
-        <input
-          type={showPassword ? "text" : "password"}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <label>
+   return (
+    <div className={styles.container}>
+      <div className={styles.formWrapper}>
+        <h1 className={styles.heading}>GİRİŞ YAP</h1>
+
+        <div className={styles.formGroup}>
+          <label>Kullanıcı Adı:</label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </div>
+
+        <div className={styles.formGroup}>
+          <label>Şifre:</label>
+          <input
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        <div className={styles.checkboxGroup}>
           <input
             type="checkbox"
             checked={showPassword}
             onChange={(e) => setShowPassword(e.target.checked)}
           />
-          Şifreyi Göster
-        </label>
+          <label>Şifreyi Göster</label>
+        </div>
+
+        <button className={styles.button} onClick={handleSignIn}>
+          Giriş Yap
+        </button>
+
+        <button className={styles.linkButton} onClick={backSignUp}>
+          Hesabınız yok mu? Kayıt Ol
+        </button>
       </div>
-      <button onClick={handleSignIn}>Giriş Yap</button>
-      <button onClick={backSignUp}>Hesabınız yok mu? Kayıt Ol</button>
     </div>
   );
 }

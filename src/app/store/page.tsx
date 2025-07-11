@@ -3,21 +3,18 @@
 import { useState, useContext } from "react";
 import Link from "next/link";
 import { MoneyContext } from "@/contexts/MoneyContext";
+import { StoreContext } from "@/contexts/StoreContext";
 import styles from "./store.module.css";
 
-const tohumlar = [
+export const tohumlar = [
   { id: "papatya", name: "Papatya", price: 10, harvestPrice: 20, image: "/Papatya.png" },
   { id: "lale",    name: "Lale",    price: 20, harvestPrice: 40, image: "/Lale.png"    },
 ];
 
 export default function StorePage() {
   const { money, setMoney } = useContext(MoneyContext);
-
-  // her ürün için default 0 stok adet
+  const { stocks, setStocks }   = useContext(StoreContext);
   const [quantities, setQuantities] = useState<number[]>(
-    Array(tohumlar.length).fill(0)
-  );
-  const [stocks, setStocks] = useState<number[]>(
     Array(tohumlar.length).fill(0)
   );
 

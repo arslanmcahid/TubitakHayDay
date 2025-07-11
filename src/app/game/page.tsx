@@ -1,15 +1,18 @@
 "use client";
 import Tarla from "@/components/Tarla/tarla";
-
-import { useState } from "react";
-import { MoneyContext } from "../../contexts/MoneyContext";
-
+import { useRouter } from "next/navigation";
+// s
 export default function GamePage() {
-    const [money, setMoney] = useState(100);
+    // const {money} = useContext(MoneyContext);
+    const router = useRouter();
+    const goStore = () =>{
+        router.push("/store");
+    }
     return (
-        <MoneyContext.Provider value={{ money, setMoney }}>
+        <>
             <h1>Hayday Tarla Oyunu</h1>
+            <button onClick={goStore}>Store</button>
             <Tarla />
-        </MoneyContext.Provider>
+        </>
     );
 }

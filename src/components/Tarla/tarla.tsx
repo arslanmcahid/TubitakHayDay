@@ -93,8 +93,7 @@ export default function Tarla() {
   if (gameOver) {
     return (
       <div className={styles.gameOver}>
-        <h2>Oyun Bitti!</h2>
-        <p>Son bakiye: {money}</p>
+        <h2>Oyun Bitti bişi yapamadın!</h2>
       </div>
     );
   }

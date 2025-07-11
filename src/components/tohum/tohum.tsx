@@ -1,20 +1,28 @@
 "use client";
 
-type hucreStages = "boş" | "tohum" ;
-// | "fidan" | "bitki" | "çiçek" | "kurumuş çiçek";
-
+export type HucreStage = "boş" | "tohum" | "fidan" | "bitki" | "çiçek" | "kurumuş çiçek";
+type LabelMap = { [K in HucreStage]: string };
 interface TohumProps {
-    stage: hucreStages;
+    stage: HucreStage;
     onClick: () => void;
 }
 
 export default function Tohum({ stage, onClick }: TohumProps) {
+    
+    const labelMap: LabelMap = {
+    boş: "+",
+    tohum: "tohum",
+    fidan: "fidan",
+    bitki: "bitki",
+    çiçek: "çiçek",
+    "kurumuş çiçek": "kurumuş çiçek",
+  };
+
+
     return (
         <button onClick={onClick}>
-
-            {stage === "boş" ? "+": "tohum"}
+            {labelMap[stage]}
         </button>
     )
-    
 
 }

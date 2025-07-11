@@ -1,34 +1,47 @@
 "use client";
+import React, { useState } from "react";
+import Tohum, { HucreStage } from "../tohum/tohum";
+import styles from "./tarla.module.css";
 
-import React from "react";
-import style from "./tarla.module.css";
-import { useState } from "react";
-import Tohum from "../tohum/tohum";
 const TARLA_SIZE = 4;
-type Stage = "boş" | "tohum";;
+// Evreleri sıralı tutan dizi
+const stageOrder: HucreStage[] = [
+  "boş",
+  "tohum",
+  "fidan",
+  "bitki",
+  "çiçek",
+  "kurumuş çiçek",
+];
 
 export default function Tarla() {
-
-    const [stages, setStages] = useState<Stage[]>(
-    Array.from({ length: TARLA_SIZE * TARLA_SIZE }, () => "boş")
+  const [stages, setStages] = useState<HucreStage[]>(
+    Array(TARLA_SIZE * TARLA_SIZE).fill("boş")
   );
 
-  const handlePlant = (index: number) => {
+  const handleClick = (idx: number) => {
     setStages((prev) => {
-      if (prev[index] !== "boş") return prev;
+      const current = prev[idx];
+      const i = stageOrder.indexOf(current);
       const copy = [...prev];
-      copy[index] = "tohum";
+      if (i === stageOrder.length - 1) {
+        // kurumuş çiçekte başa dön
+        copy[idx] = stageOrder[0];
+      } else {
+        // next stage e gec
+        copy[idx] = stageOrder[i + 1];
+      }
       return copy;
     });
   };
 
   return (
-    <div className={style.menuGrid}>
-      {stages.map((stage, id) => (
+    <div className={styles.menuGrid}>
+      {stages.map((stage, idx) => (
         <Tohum
-          key={id}
+          key={idx}
           stage={stage}
-          onClick={() => handlePlant(id)}
+          onClick={() => handleClick(idx)}
         />
       ))}
     </div>

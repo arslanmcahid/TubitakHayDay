@@ -1,7 +1,20 @@
 "use client";
 
+type hucreStages = "boş" | "tohum" ;
+// | "fidan" | "bitki" | "çiçek" | "kurumuş çiçek";
 
-export default function Tohum() {
+interface TohumProps {
+    stage: hucreStages;
+    onClick: () => void;
+}
 
+export default function Tohum({ stage, onClick }: TohumProps) {
+    return (
+        <button onClick={onClick}>
+
+            {stage === "boş" ? "+": "tohum"}
+        </button>
+    )
+    
 
 }
